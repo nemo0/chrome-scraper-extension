@@ -9,7 +9,6 @@
 //     sendResponse();
 //   });
 
-let urlArr;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message === 'dom') {
     console.log('Message: ', request.message);
@@ -21,7 +20,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
   if (request.message === 'sending_links_of_posts') {
-    urlArr = request.url;
-    console.log(urlArr);
+    changeUrl(request);
   }
 });
+
+function changeUrl(request) {
+  const urlArr = request.url;
+  console.log(urlArr);
+  chrome.storage.local.set({ urls: urlArr }, function () {
+    console.log('Urls stored. \n' + urlArr);
+  });
+  chrome.storage.local.get(['urls'], function (result) {
+    for (let i = 1; i < result.urls.length; i++) {
+      console.log('Value currently is ' + result.urls[i]);
+      chrome.tabs.create({
+        url: 'https://m.facebook.com' + urlArr[i],
+      });
+    }
+  });
+
+  // if (urlArr !== undefined) {
+  //   for (let i = 1; i < urlArr.length; i++) {
+  //     chrome.tabs.update(undefined, {
+  //       url: 'https://m.facebook.com' + urlArr[i],
+  //     });
+  //   }
+  // }
+}

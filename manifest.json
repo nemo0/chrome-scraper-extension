@@ -19,7 +19,7 @@
     "default_title": "page action demo",
     "default_popup": "src/page_action/page_action.html"
   },
-  "permissions": ["tabs", "*://*.facebook.com/*"],
+  "permissions": ["tabs", "*://*.facebook.com/*", "storage"],
   "content_scripts": [
     {
       "matches": ["*://m.facebook.com/*"],

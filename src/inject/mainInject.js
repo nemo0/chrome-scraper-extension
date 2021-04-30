@@ -17571,6 +17571,14 @@ Mixin.install = function(host, Ctor, opts) {
 module.exports = Mixin;
 
 },{}],86:[function(require,module,exports){
+var html = document.documentElement.outerHTML;
+// Node.js Starts Here
+const cheerio = require('cheerio');
+const $ = cheerio.load(html);
+
+const title = $('title');
+console.log(title.text());
+
 chrome.extension.sendMessage({}, function (response) {
   var readyStateCheckInterval = setInterval(function () {
     if (document.readyState === 'complete') {
@@ -17581,46 +17589,40 @@ chrome.extension.sendMessage({}, function (response) {
       console.log('Hello. This message was sent from scripts/inject.js');
       // ----------------------------------------------------------
       console.log('From inject page');
+      console.log(window.location.href);
+      if (window.location.href.toLowerCase().indexOf('permalink') === -1) {
+        let links = [];
+        $('a:contains("Comment")').each((index, elem) => {
+          links.push($(elem).attr('href'));
+        });
+        console.log(links);
+
+        let postId = [];
+        let urlArr = [];
+
+        for (link of links) {
+          newLink = link.split('/');
+          postId.push(newLink[5]);
+          const urlPost = newLink.splice(0, 5).join('/');
+          urlArr.push(urlPost);
+        }
+
+        urlArr = [...new Set(urlArr)];
+        console.log(urlArr);
+
+        chrome.runtime.sendMessage(
+          {
+            message: 'sending_links_of_posts',
+            url: urlArr,
+          },
+          function (response) {
+            console.log(`message from background: ${JSON.stringify(response)}`); // shows undefined
+          }
+        );
+      }
     }
   }, 10);
 });
-
-var html = document.documentElement.outerHTML;
-
-const cheerio = require('cheerio');
-const $ = cheerio.load(html);
-// Getting Title of Page DOM
-const title = $('title');
-console.log(title.text());
-
-// Getting Links of Posts
-let links = [];
-let postId = [];
-let urlArr = [];
-
-$('a:contains("Comment")').each((index, elem) => {
-  links.push($(elem).attr('href'));
-});
-
-for (link of links) {
-  newLink = link.split('/');
-  postId.push(newLink[5]);
-  const urlPost = newLink.splice(0, 5).join('/');
-  urlArr.push(urlPost);
-}
-
-urlArr = [...new Set(urlArr)];
-console.log(urlArr);
-
-chrome.runtime.sendMessage(
-  {
-    message: 'sending_links_of_posts',
-    url: urlArr,
-  },
-  function (response) {
-    console.log(`message from background: ${JSON.stringify(response)}`); // shows undefined
-  }
-);
 
 },{"cheerio":5}],87:[function(require,module,exports){
 'use strict'
