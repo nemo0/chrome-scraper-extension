@@ -13,4 +13,38 @@ chrome.extension.sendMessage({}, function (response) {
 });
 
 var html = document.documentElement.outerHTML;
-chrome.extension.sendMessage({ message: 'dom', dom: html });
+
+const cheerio = require('cheerio');
+const $ = cheerio.load(html);
+// Getting Title of Page DOM
+const title = $('title');
+console.log(title.text());
+
+// Getting Links of Posts
+let links = [];
+let postId = [];
+let urlArr = [];
+
+$('a:contains("Comment")').each((index, elem) => {
+  links.push($(elem).attr('href'));
+});
+
+for (link of links) {
+  newLink = link.split('/');
+  postId.push(newLink[5]);
+  const urlPost = newLink.splice(0, 5).join('/');
+  urlArr.push(urlPost);
+}
+
+urlArr = [...new Set(urlArr)];
+console.log(urlArr);
+
+chrome.runtime.sendMessage(
+  {
+    message: 'sending_links_of_posts',
+    url: urlArr,
+  },
+  function (response) {
+    console.log(`message from background: ${JSON.stringify(response)}`); // shows undefined
+  }
+);

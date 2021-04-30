@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "matches": ["*://m.facebook.com/*"],
-      "js": ["src/inject/inject.js"]
+      "js": ["src/inject/mainInject.js"]
     },
     {
       "matches": ["*://www.facebook.com/*"],

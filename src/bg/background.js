@@ -9,6 +9,7 @@
 //     sendResponse();
 //   });
 
+let urlArr;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message === 'dom') {
     console.log('Message: ', request.message);
@@ -18,5 +19,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       message: 'Hi!',
     });
     return true;
+  }
+  if (request.message === 'sending_links_of_posts') {
+    urlArr = request.url;
+    console.log(urlArr);
   }
 });
