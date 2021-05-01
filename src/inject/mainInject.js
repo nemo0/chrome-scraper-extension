@@ -17623,6 +17623,22 @@ chrome.extension.sendMessage({}, function (response) {
     }
   }, 10);
 });
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.message === 'url_changed') {
+    console.log(request.message);
+    console.log(sender);
+    // chrome.runtime.sendMessage(
+    //   {
+    //     message: 'sending_comments',
+    //   },
+    //   function (response) {
+    //     console.log(
+    //       `message from background: ${JSON.stringify(response)}`
+    //     ); // shows undefined
+    //   }
+    // );
+  }
+});
 
 },{"cheerio":5}],87:[function(require,module,exports){
 'use strict'
