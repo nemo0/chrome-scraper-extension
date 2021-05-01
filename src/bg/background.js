@@ -30,10 +30,10 @@ function changeUrl(request) {
   chrome.storage.local.set({ urls: urlArr }, function () {
     console.log('Urls stored. \n' + urlArr);
   });
-  chrome.storage.local.get(['urls'], function (result) {
+  chrome.storage.local.get(['urls'], async function (result) {
     for (let i = 1; i < result.urls.length; i++) {
       console.log('Value currently is ' + result.urls[i]);
-      chrome.tabs.create({
+      await chrome.tabs.update(undefined, {
         url: 'https://m.facebook.com' + urlArr[i],
       });
     }
