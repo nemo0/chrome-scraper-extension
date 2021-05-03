@@ -17588,7 +17588,6 @@ chrome.extension.sendMessage({}, function (response) {
       // This part of the script triggers when page is done loading
       console.log('Hello. This message was sent from scripts/inject.js');
       // ----------------------------------------------------------
-      console.log('From inject page');
       console.log(window.location.href);
       if (window.location.href.toLowerCase().indexOf('permalink') === -1) {
         let links = [];
@@ -17623,10 +17622,26 @@ chrome.extension.sendMessage({}, function (response) {
     }
   }, 10);
 });
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+
+chrome.runtime.onMessage.addListener(async function (
+  request,
+  sender,
+  sendResponse
+) {
   if (request.message === 'url_changed') {
     console.log(request.message);
-    console.log(sender);
+    let commentArray;
+    const listOfComments = $('[data-sigil=m-mentions-expand]')
+      .find('[data-sigil=comment-body]')
+      .toArray()
+      .map((element) => {
+        let comments = {};
+        comments.comment = $(element).text();
+        commentArray.push(comments);
+      });
+    chrome.storage.local.set({ comments: commentArray }, function () {
+      console.log('Comments Stored ' + commentArray);
+    });
     // chrome.runtime.sendMessage(
     //   {
     //     message: 'sending_comments',
@@ -17638,6 +17653,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     //   }
     // );
   }
+});
+
+chrome.storage.local.get(['comments'], function (result) {
+  console.log('Value currently is ' + result.comments);
 });
 
 },{"cheerio":5}],87:[function(require,module,exports){

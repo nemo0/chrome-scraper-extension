@@ -46,25 +46,42 @@ chrome.extension.sendMessage({}, function (response) {
           }
         );
       }
-      chrome.runtime.onMessage.addListener(function (
-        request,
-        sender,
-        sendResponse
-      ) {
-        if (request.message === 'url_changed') {
-          console.log(request.message);
-          // chrome.runtime.sendMessage(
-          //   {
-          //     message: 'sending_comments',
-          //   },
-          //   function (response) {
-          //     console.log(
-          //       `message from background: ${JSON.stringify(response)}`
-          //     ); // shows undefined
-          //   }
-          // );
-        }
-      });
     }
   }, 10);
+});
+
+chrome.runtime.onMessage.addListener(async function (
+  request,
+  sender,
+  sendResponse
+) {
+  if (request.message === 'url_changed') {
+    console.log(request.message);
+    let commentArray;
+    const listOfComments = $('[data-sigil=m-mentions-expand]')
+      .find('[data-sigil=comment-body]')
+      .toArray()
+      .map((element) => {
+        let comments = {};
+        comments.comment = $(element).text();
+        commentArray.push(comments);
+      });
+    chrome.storage.local.set({ comments: commentArray }, function () {
+      console.log('Comments Stored ' + commentArray);
+    });
+    // chrome.runtime.sendMessage(
+    //   {
+    //     message: 'sending_comments',
+    //   },
+    //   function (response) {
+    //     console.log(
+    //       `message from background: ${JSON.stringify(response)}`
+    //     ); // shows undefined
+    //   }
+    // );
+  }
+});
+
+chrome.storage.local.get(['comments'], function (result) {
+  console.log('Value currently is ' + result.comments);
 });

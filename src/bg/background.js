@@ -42,18 +42,23 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 function changeUrl(i, tabId) {
-  chrome.storage.local.get(['urls'], function (result) {
+  chrome.storage.local.get(['urls'], async function (result) {
     if (i >= result.urls.length) {
       return;
     }
     console.log('Value currently is ' + result.urls[i]);
     if (result.urls[i] !== undefined) {
-      chrome.tabs.update(tabId, {
+      await chrome.tabs.update(tabId, {
         url: 'https://m.facebook.com' + result.urls[i],
       });
-      chrome.runtime.sendMessage({ message: 'url_changed' });
+      await chrome.tabs.sendMessage(tabId, { message: 'url_changed' });
+      sleep(2000);
     }
   });
+}
+// Sleep Function
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // Old ChangeUrl function
