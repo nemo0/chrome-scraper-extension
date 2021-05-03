@@ -15,7 +15,6 @@ chrome.extension.sendMessage({}, function (response) {
       // This part of the script triggers when page is done loading
       console.log('Hello. This message was sent from scripts/inject.js');
       // ----------------------------------------------------------
-      console.log('From inject page');
       console.log(window.location.href);
       if (window.location.href.toLowerCase().indexOf('permalink') === -1) {
         let links = [];
@@ -47,22 +46,25 @@ chrome.extension.sendMessage({}, function (response) {
           }
         );
       }
+      chrome.runtime.onMessage.addListener(function (
+        request,
+        sender,
+        sendResponse
+      ) {
+        if (request.message === 'url_changed') {
+          console.log(request.message);
+          // chrome.runtime.sendMessage(
+          //   {
+          //     message: 'sending_comments',
+          //   },
+          //   function (response) {
+          //     console.log(
+          //       `message from background: ${JSON.stringify(response)}`
+          //     ); // shows undefined
+          //   }
+          // );
+        }
+      });
     }
   }, 10);
-});
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.message === 'url_changed') {
-    console.log(request.message);
-    console.log(sender);
-    // chrome.runtime.sendMessage(
-    //   {
-    //     message: 'sending_comments',
-    //   },
-    //   function (response) {
-    //     console.log(
-    //       `message from background: ${JSON.stringify(response)}`
-    //     ); // shows undefined
-    //   }
-    // );
-  }
 });

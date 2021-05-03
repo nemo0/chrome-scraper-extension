@@ -35,19 +35,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // only update after the page has loaded
   if (changeInfo.status === 'complete') {
+    console.log(tabId);
     i++;
-    changeUrl(i);
+    changeUrl(i, tabId);
   }
 });
 
-function changeUrl(i) {
+function changeUrl(i, tabId) {
   chrome.storage.local.get(['urls'], function (result) {
     if (i >= result.urls.length) {
       return;
     }
     console.log('Value currently is ' + result.urls[i]);
     if (result.urls[i] !== undefined) {
-      chrome.tabs.update(undefined, {
+      chrome.tabs.update(tabId, {
         url: 'https://m.facebook.com' + result.urls[i],
       });
       chrome.runtime.sendMessage({ message: 'url_changed' });
